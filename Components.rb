@@ -6,7 +6,7 @@ class Component
   end
 
   def to_s
-    return "Component {#{id}: #{self.class.name}}"
+    return self.class.name
   end
 
 end
