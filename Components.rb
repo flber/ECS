@@ -14,10 +14,10 @@ end
 #=================================================
 
 class Renderable < Component
-  attr_reader :image, :rotation
+  attr_reader :image_loc, :rotation
 
   def initialize(file_name, rot)
-    @image = Gosu::Image.new(file_name)
+    @image_loc = file_name
     @rotation = rot
   end
 

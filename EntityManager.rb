@@ -1,4 +1,5 @@
 class EntityManager
+  attr_reader :entity_list
 
   def initialize
     @entity_list = Hash.new
@@ -7,34 +8,41 @@ class EntityManager
   end
 
   def create_id
-    return SecureRandom.uuid
+    return rand(1..10000)
   end
 
   def create_entity(tag)
     id = create_id
-    ids_to_tags[id] = tag
-    tags_to_ids[tag] = id
+    @ids_to_tags[id] = tag
+    @tags_to_ids[tag] = id
     @entity_list[id] = Hash.new
   end
 
   def remove_entity(tag)
-    id = ids_to_tags[tag]
+    id = @ids_to_tags[tag]
     @entity_list.delete(id)
   end
 
   def add_component(tag, component)
-    id = ids_to_tags[tag]
-    @entity_list[id] << {component.to_s => component}
+    id = @ids_to_tags[tag]
+    if @entity_list[id] == nil
+      @entity_list[id] = Hash.new
+      @entity_list[id].store(component.to_s, component)
+      puts "added #{component} to #{@tags_to_ids[tag]}"
+    else
+      @entity_list[id].store(component.to_s, component)
+      puts "added #{component} to #{@tags_to_ids[tag]}"
+    end
   end
 
   # not entirely sure if this works...
-  def add_entity(tag, entity)
-    id = ids_to_tags[tag]
-    @entity_list[id] << {entity => @entity_list[entity]
-  end
+  # def add_entity(tag, entity)
+  #   id = @ids_to_tags[tag]
+  #   @entity_list[id] << {entity => @entity_list[entity]
+  # end
 
   def components_of_entity(tag)
-    id = ids_to_tags[tag]
+    id = @ids_to_tags[tag]
     return @entity_list[id]
   end
 
@@ -49,7 +57,7 @@ class EntityManager
   end
 
   def get_component(tag, component)
-    id = ids_to_tags[tag]
+    id = @ids_to_tags[tag]
     return @entity_list[id][component.to_s]
   end
 
