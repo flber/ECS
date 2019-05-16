@@ -1,29 +1,34 @@
 require 'gosu'
+require 'chunky_png'
 require_relative 'EntityManager'
 require_relative 'Components'
 require_relative 'Systems'
 
+$width = 640
+$height = 480
+
 class Main < Gosu::Window
   def initialize
-    super 640, 480
+    super $width, $height
     self.caption = "ECS"
     @e_mng = EntityManager.new
     @e_mng.create_entity("Ball")
-    br1 = Renderable.new("images/pear.jpg", 0)
-    bl1 = Location.new(1, 1, 0, 0)
-    @e_mng.add_component("Ball", br1)
-    @e_mng.add_component("Ball", bl1)
+    @e_mng.add_component("Ball", Renderable.new("images/ball.png", 0))
+    @e_mng.add_component("Ball", Location.new(300, 200, 0, 0))
+    @e_mng.add_component("Ball", AffectedByGravity.new)
+    @e_mng.add_component("Ball", BouncesOnEdge.new)
     @render = Render.new
+    @physics = Physics.new
+    @gravity = Gravity.new
   end
 
   def update
   end
 
   def draw
-    puts "Entities: #{@e_mng.entity_list}"
     @render.process_tick(@e_mng)
-    # image = Gosu::Image.new("images/pear.jpg")
-    # image.draw_rot(100, 175, 1, 0)
+    @physics.process_tick(@e_mng)
+    @gravity.process_tick(@e_mng)
   end
 
   def button_down(id)

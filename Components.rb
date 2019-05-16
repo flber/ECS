@@ -2,7 +2,7 @@ class Component
   attr_reader :id
 
   def initialize
-    @id = SecureRandom.uuid
+    @id = rand(0..1000000)
   end
 
   def to_s
@@ -14,11 +14,14 @@ end
 #=================================================
 
 class Renderable < Component
-  attr_reader :image_loc, :rotation
+  attr_reader :image, :rotation, :width, :height
 
   def initialize(file_name, rot)
-    @image_loc = file_name
+    @image = Gosu::Image.new(file_name)
     @rotation = rot
+    chunk_image = ChunkyPNG::Image.from_file(file_name)
+    @width = chunk_image.width
+    @height = chunk_image.height
   end
 
 end
@@ -26,7 +29,7 @@ end
 #=================================================
 
 class Location < Component
-  attr_reader :x, :y, :dx, :dy
+  attr_accessor :x, :y, :dx, :dy
 
   def initialize(x, y, dx, dy)
     @x = x
@@ -45,4 +48,9 @@ end
 #=================================================
 
 class Movement < Component
+end
+
+#=================================================
+
+class BouncesOnEdge < Component
 end

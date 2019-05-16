@@ -1,64 +1,87 @@
 class EntityManager
-  attr_reader :entity_list
+  attr_reader :component_stores
 
   def initialize
-    @entity_list = Hash.new
-    @ids_to_tags = Hash.new
-    @tags_to_ids = Hash.new
+    @component_stores = Hash.new
+    # a list of ids indexed by tag
+    @id_at_tag = Hash.new
+    # a list of tags indexed by id
+    @tag_at_id = Hash.new
+    #an array of used ids
+    @used_ids = Array.new
   end
 
   def create_id
-    return rand(1..10000)
+    id = rand(1..10000)
+    while @used_ids.include?(id)
+      id = rand(1..1000000)
+    end
+    @used_ids << id
+    return id
   end
 
   def create_entity(tag)
     id = create_id
-    @ids_to_tags[id] = tag
-    @tags_to_ids[tag] = id
-    @entity_list[id] = Hash.new
+    @id_at_tag[tag] = id
+    @tag_at_id[id] = tag
+    @component_stores.merge({id => Array.new})
   end
 
   def remove_entity(tag)
-    id = @ids_to_tags[tag]
-    @entity_list.delete(id)
+    id = @id_at_tag[tag]
+    @component_stores.delete(id)
+    @id_at_tag.delete(tag)
+    @tag_at_id.delete(id)
   end
 
   def add_component(tag, component)
-    id = @ids_to_tags[tag]
-    if @entity_list[id] == nil
-      @entity_list[id] = Hash.new
-      @entity_list[id].store(component.to_s, component)
-      puts "added #{component} to #{@tags_to_ids[tag]}"
+    id = @id_at_tag[tag]
+    if @component_stores[id].nil?
+      @component_stores[id] = Array.new(1){component}
     else
-      @entity_list[id].store(component.to_s, component)
-      puts "added #{component} to #{@tags_to_ids[tag]}"
+      @component_stores[id] << component
     end
   end
 
-  # not entirely sure if this works...
-  # def add_entity(tag, entity)
-  #   id = @ids_to_tags[tag]
-  #   @entity_list[id] << {entity => @entity_list[entity]
-  # end
-
-  def components_of_entity(tag)
-    id = @ids_to_tags[tag]
-    return @entity_list[id]
+  def components_of(tag)
+    id = @id_at_tag[tag]
+    components = []
+    @component_stores[id].each do |comp|
+      components << comp.class
+    end
+    return components
   end
 
-  def entities_with_component(component)
-    entities = Array.new
-    @entity_list.each do |e|
-      if e.include? component
-        entities << e
+  def has_component_of_type(tag, component_class)
+    return components_of(tag).include?(component_class)
+  end
+
+  def get_component(id, component_class)
+    @component_stores[id].each do |comp|
+      if comp.to_s == component_class.to_s
+        return comp
+      end
+    end
+    return nil
+  end
+
+  def entities_with_component(component_class)
+    entities = []
+    @component_stores.each do |e|
+      entity = @component_stores[e[0]]
+      entity.each do |c|
+        if c.to_s == component_class.to_s
+          entities << e[0]
+        end
       end
     end
     return entities
   end
 
-  def get_component(tag, component)
-    id = @ids_to_tags[tag]
-    return @entity_list[id][component.to_s]
-  end
+  # not entirely sure if this works...
+  # def add_entity(tag, entity)
+  #   id = @id_at_tag[tag]
+  #   @component_stores[id] << {entity => @component_stores[entity]
+  # end
 
 end
