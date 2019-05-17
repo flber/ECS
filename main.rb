@@ -14,7 +14,7 @@ class Main < Gosu::Window
     @e_mng = EntityManager.new
     @e_mng.create_entity("Ball")
     @e_mng.add_component("Ball", Renderable.new("images/ball.png", 0))
-    @e_mng.add_component("Ball", Location.new(300, 200, 0, 0))
+    @e_mng.add_component("Ball", Location.new(300, 200, 5, -10))
     @e_mng.add_component("Ball", AffectedByGravity.new)
     @e_mng.add_component("Ball", BouncesOnEdge.new)
     @render = Render.new
@@ -34,6 +34,8 @@ class Main < Gosu::Window
   def button_down(id)
    if id == Gosu::KB_ESCAPE
      close
+   else if id == Gosu::KB_SPACE
+     #add vertical velocity to ball?
    else
      super
    end

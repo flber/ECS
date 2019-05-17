@@ -11,6 +11,14 @@ class EntityManager
     @used_ids = Array.new
   end
 
+  def get_id_at_tag
+    return @id_at_tag
+  end
+
+  def get_tag_at_id
+    return @tag_at_id
+  end
+
   def create_id
     id = rand(1..10000)
     while @used_ids.include?(id)
