@@ -33,7 +33,6 @@ class Physics < System
       loc_comp = ent_mng.get_component(e, Location)
       loc_comp.x += loc_comp.dx
       loc_comp.y += loc_comp.dy
-      puts "x: #{loc_comp.x.to_i}, y: #{loc_comp.y.to_i}"
     end
     ent_mng.entities_with_component(BouncesOnEdge).each do |e|
       loc_comp = ent_mng.get_component(e, Location)

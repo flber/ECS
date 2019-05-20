@@ -12,11 +12,13 @@ class Main < Gosu::Window
     super $width, $height
     self.caption = "ECS"
     @e_mng = EntityManager.new
-    @e_mng.create_entity("Ball")
-    @e_mng.add_component("Ball", Renderable.new("images/ball.png", 0))
-    @e_mng.add_component("Ball", Location.new(300, 200, 5, -10))
-    @e_mng.add_component("Ball", AffectedByGravity.new)
-    @e_mng.add_component("Ball", BouncesOnEdge.new)
+    (0..30).each do |i|
+      @e_mng.create_entity("Ball#{i}")
+      @e_mng.add_component("Ball#{i}", Renderable.new("images/ball.png", 0))
+      @e_mng.add_component("Ball#{i}", Location.new(rand(100..540), rand(100..380), rand(-15..15), -20))
+      @e_mng.add_component("Ball#{i}", AffectedByGravity.new)
+      @e_mng.add_component("Ball#{i}", BouncesOnEdge.new)
+    end
     @render = Render.new
     @physics = Physics.new
     @gravity = Gravity.new
@@ -34,8 +36,6 @@ class Main < Gosu::Window
   def button_down(id)
    if id == Gosu::KB_ESCAPE
      close
-   else if id == Gosu::KB_SPACE
-     #add vertical velocity to ball?
    else
      super
    end
