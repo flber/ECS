@@ -18,7 +18,7 @@ class Render < System
       y = loc_comp.y
       angle = render_comp.rotation
       image = render_comp.image
-      image.draw_rot(x, y, 1, angle)
+      image.draw_rot(x, y, render_comp.zorder, angle)
     end
   end
 
@@ -29,37 +29,36 @@ end
 class Physics < System
 
   def process_tick(ent_mng)
-    ent_mng.entities_with_component(Location).each do |e|
-      loc_comp = ent_mng.get_component(e, Location)
-      loc_comp.x += loc_comp.dx
-      loc_comp.y += loc_comp.dy
+    ent_mng.entities_with_component(RigidBody).each do |e|
+      rbod_comp = ent_mng.get_component(e, RigidBody)
+
     end
-    ent_mng.entities_with_component(BouncesOnEdge).each do |e|
-      loc_comp = ent_mng.get_component(e, Location)
-      rend_comp = ent_mng.get_component(e, Renderable)
-      if loc_comp.x - rend_comp.width/2 <= 1 || loc_comp.x + rend_comp.width/2 >= $width - 1
-        loc_comp.dx *= -1
-        loc_comp.dx *= 0.8
-        loc_comp.dy *= 0.8
-      end
-      if loc_comp.y - rend_comp.height/2 <= 1 || loc_comp.y + rend_comp.height/2 >= $height - 1
-        loc_comp.dy *= -1
-        loc_comp.dx *= 0.8
-        loc_comp.dy *= 0.8
-      end
-      if loc_comp.x - rend_comp.width/2 < 0
-        loc_comp.x = rend_comp.width/2 + 1
-      end
-      if loc_comp.x + rend_comp.width/2 > $width
-        loc_comp.x = $width - (rend_comp.height/2 + 1)
-      end
-      if loc_comp.y - rend_comp.height/2 < 0
-        loc_comp.y = rend_comp.height/2 + 1
-      end
-      if loc_comp.y + rend_comp.height/2 > $height
-        loc_comp.y = $height - (rend_comp.height/2 + 1)
-      end
-    end
+    # ent_mng.entities_with_component(BouncesOnEdge).each do |e|
+    #   loc_comp = ent_mng.get_component(e, Location)
+    #   rend_comp = ent_mng.get_component(e, Renderable)
+    #   if loc_comp.x - rend_comp.width/2 <= 1 || loc_comp.x + rend_comp.width/2 >= $width - 1
+    #     loc_comp.dx *= -1
+    #     loc_comp.dx *= 0.8
+    #     loc_comp.dy *= 0.8
+    #   end
+    #   if loc_comp.y - rend_comp.height/2 <= 1 || loc_comp.y + rend_comp.height/2 >= $height - 1
+    #     loc_comp.dy *= -1
+    #     loc_comp.dx *= 0.8
+    #     loc_comp.dy *= 0.8
+    #   end
+    #   if loc_comp.x - rend_comp.width/2 < 0
+    #     loc_comp.x = rend_comp.width/2 + 1
+    #   end
+    #   if loc_comp.x + rend_comp.width/2 > $width
+    #     loc_comp.x = $width - (rend_comp.height/2 + 1)
+    #   end
+    #   if loc_comp.y - rend_comp.height/2 < 0
+    #     loc_comp.y = rend_comp.height/2 + 1
+    #   end
+    #   if loc_comp.y + rend_comp.height/2 > $height
+    #     loc_comp.y = $height - (rend_comp.height/2 + 1)
+    #   end
+    # end
   end
 
 end
@@ -72,8 +71,8 @@ class Gravity < System
 
   def process_tick(ent_mng)
     ent_mng.entities_with_component(AffectedByGravity).each do |e|
-      loc_comp = ent_mng.get_component(e, Location)
-      loc_comp.dy += ACCELERATION
+      rBody_comp = ent_mng.get_component(e, RigidBody)
+      rBody_comp.shape.body.apply_force(-rBody_comp.shape.body.rot * (1000.0/SUBSTEPS), CP::Vec2.new(0.0, 0.0))
     end
   end
 
