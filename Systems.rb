@@ -31,34 +31,9 @@ class Physics < System
   def process_tick(ent_mng)
     ent_mng.entities_with_component(RigidBody).each do |e|
       rbod_comp = ent_mng.get_component(e, RigidBody)
-
+      #Simulate physics here, basically just add velocity to position
+      #and check for collisions
     end
-    # ent_mng.entities_with_component(BouncesOnEdge).each do |e|
-    #   loc_comp = ent_mng.get_component(e, Location)
-    #   rend_comp = ent_mng.get_component(e, Renderable)
-    #   if loc_comp.x - rend_comp.width/2 <= 1 || loc_comp.x + rend_comp.width/2 >= $width - 1
-    #     loc_comp.dx *= -1
-    #     loc_comp.dx *= 0.8
-    #     loc_comp.dy *= 0.8
-    #   end
-    #   if loc_comp.y - rend_comp.height/2 <= 1 || loc_comp.y + rend_comp.height/2 >= $height - 1
-    #     loc_comp.dy *= -1
-    #     loc_comp.dx *= 0.8
-    #     loc_comp.dy *= 0.8
-    #   end
-    #   if loc_comp.x - rend_comp.width/2 < 0
-    #     loc_comp.x = rend_comp.width/2 + 1
-    #   end
-    #   if loc_comp.x + rend_comp.width/2 > $width
-    #     loc_comp.x = $width - (rend_comp.height/2 + 1)
-    #   end
-    #   if loc_comp.y - rend_comp.height/2 < 0
-    #     loc_comp.y = rend_comp.height/2 + 1
-    #   end
-    #   if loc_comp.y + rend_comp.height/2 > $height
-    #     loc_comp.y = $height - (rend_comp.height/2 + 1)
-    #   end
-    # end
   end
 
 end
