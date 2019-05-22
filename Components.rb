@@ -57,14 +57,36 @@ end
 #=================================================
 
 class RigidBody < Component
-  attr_reader :p
-  attr_accessor :v, :a, :shape
+  attr_accessor :shape, :body, :image
 
-  def initialize(body, shape_array, pos)
-    @shape = CP::Shape::Poly.new(body, shape_array, CP::Vec2.new(0,0))
-    @p = @shape.body.p = pos
-    @v = @shape.body.v = CP::Vec2.new(0.0, 0.0)
-    @a = @shape.body.a = (3*Math::PI/2.0)
+  def initialize(image_file, x, y, zorder)
+    @zorder = zorder
+    @image = Gosu::Image.new(image_file)
+    @chunk_image = ChunkyPNG::Image.from_file(image_file)
+    @width = @chunk_image.width
+    @height = @chunk_image.height
+    #@shape_array = create_shape
+    @body = CP::Body.new(x, y)
+    @shape = CP::Shape::Poly.new(@body, @shape_array, CP::Vec2.new(0, 0))
+  end
+
+  def create_shape
+    shape_array = []
+    (0..@width).each do |r|
+      (0..@height).each do |c|
+         if @chunk_image.get_pixel(r, c).to_s != "0"
+           shape_array.push CP::Vec2.new(r, c)
+           while(@chunk_image.get_pixel(r, c).to_s != "")
+             #puts "at r, c = #{@chunk_image.get_pixel(r, c).to_s}"
+             c+=1;
+             puts "c: #{c}"
+             break if c > @height
+           end
+           shape_array.push CP::Vec2.new(r, c)
+         end
+      end
+    end
+    return shape_array
   end
 
 end

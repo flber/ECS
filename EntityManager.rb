@@ -51,8 +51,7 @@ class EntityManager
     end
   end
 
-  def components_of(tag)
-    id = @id_at_tag[tag]
+  def components_of(id)
     components = []
     @component_stores[id].each do |comp|
       components << comp.class
@@ -60,8 +59,8 @@ class EntityManager
     return components
   end
 
-  def has_component_of_type(tag, component_class)
-    return components_of(tag).include?(component_class)
+  def has_component_of_type(id, component_class)
+    return components_of(id).include?(component_class)
   end
 
   def get_component(id, component_class)
