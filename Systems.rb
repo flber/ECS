@@ -21,12 +21,6 @@ class Render < System
         image = render_comp.image
         image.draw_rot(x, y, render_comp.zorder, angle)
       end
-      if ent_mng.has_component_of_type(e, RigidBody)
-        render_comp = ent_mng.get_component(e, Renderable)
-        rbod_comp = ent_mng.get_component(e, RigidBody)
-        image = render_comp.image
-        x = rbod_comp.shape.body.p
-      end
     end
   end
 
@@ -34,15 +28,13 @@ end
 
 #=================================================
 
-class Physics < System
+class Acceleration < System
 
   def process_tick(ent_mng)
-    ent_mng.entities_with_component(RigidBody).each do |e|
-      rbod_comp = ent_mng.get_component(e, RigidBody)
-      puts "v = #{rbod_comp.shape.body.v}"
-      rbod_comp.shape.body.p += rbod_comp.shape.body.v
-      #Simulate physics here, basically just add velocity to position
-      #and check for collisions
+    ent_mng.entities_with_component(Location).each do |e|
+      loc_comp = ent_mng.get_component(e, Location)
+      loc_comp.x += loc_comp.dx
+      loc_comp.y += loc_comp.dy
     end
   end
 
@@ -54,10 +46,31 @@ class Gravity < System
 
   ACCELERATION = 0.6
 
-  def process_tick(ent_mng, space)
+  def process_tick(ent_mng)
     ent_mng.entities_with_component(AffectedByGravity).each do |e|
-      rbod_comp = ent_mng.get_component(e, RigidBody)
-      #space.cpBodyApplyForce(rbod_comp.body, CP::Vec2.new(0,2), 0)
+      loc_comp = ent_mng.get_component(e, Location)
+      loc_comp.dy += ACCELERATION
+    end
+  end
+
+end
+
+#=================================================
+
+class Collisions < System
+
+  def process_tick(ent_mng)
+    ent_mng.entities_with_component(Collides).each do |e|
+      if ent_mng.has_component_of_type(e, Renderable)
+        col_comp = ent_mng.get_component(e, Collides)
+        render_comp = ent_mng.get_component(e, Renderable)
+        if col_comp.shape == "ball"
+          
+        end
+        if col_comp.shape == "rect"
+
+        end
+      end
     end
   end
 
