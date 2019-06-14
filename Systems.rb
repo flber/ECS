@@ -65,7 +65,7 @@ class Collisions < System
         col_comp = ent_mng.get_component(e, Collides)
         render_comp = ent_mng.get_component(e, Renderable)
         if col_comp.shape == "ball"
-          
+
         end
         if col_comp.shape == "rect"
 
