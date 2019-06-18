@@ -1,4 +1,13 @@
+module Checks
+  def inWindow(x, y)
+    return x > 0 && x < $width &&
+           y > 0 && y < $height
+  end
+end
+
 class System
+
+  include Checks
 
   def process_tick
     raise RuntimeError, "You're doing something wrong!"
@@ -59,19 +68,41 @@ end
 
 class Collisions < System
 
-  def process_tick(ent_mng)
+  def process_tick(ent_mng, space)
     ent_mng.entities_with_component(Collides).each do |e|
       if ent_mng.has_component_of_type(e, Renderable)
         col_comp = ent_mng.get_component(e, Collides)
+        @shape = col_comp.shape
         render_comp = ent_mng.get_component(e, Renderable)
-        if col_comp.shape == "ball"
-
+        loc_comp = ent_mng.get_component(e, Location)
+        #remove previous points
+        @shape.each do |point|
+          x = point[0] - 25 + loc_comp.x - loc_comp.dx
+          y = point[1] - 50 + loc_comp.y - loc_comp.dy
+          if x > 0 && x < $width &&
+             y > 0 && y < $height
+            space[x][y] -= [e]
+          end
         end
-        if col_comp.shape == "rect"
-
+        #add current points
+        @shape.each do |point|
+          x = point[0] - 25 + loc_comp.x
+          y = point[1] - 50 + loc_comp.y
+          if inWindow(x, y)
+            space[x][y] << e
+          end
+        end
+        @shape.each do |point|
+          x = point[0] - 25 + loc_comp.x
+          y = point[1] - 50 + loc_comp.y
+          if inWindow(x, y) && space[x][y].length > 1
+            loc_comp.dx *= -1
+            loc_comp.dy *= -1
+          end
         end
       end
     end
+    return space
   end
 
 end

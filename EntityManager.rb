@@ -72,6 +72,16 @@ class EntityManager
     return nil
   end
 
+  def get_component_with_tag(tag, component_class)
+    id = @id_at_tag[tag]
+    @component_stores[id].each do |comp|
+      if comp.to_s == component_class.to_s
+        return comp
+      end
+    end
+    return nil
+  end
+
   def entities_with_component(component_class)
     entities = []
     @component_stores.each do |e|
