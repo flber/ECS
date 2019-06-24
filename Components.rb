@@ -68,13 +68,13 @@ class Collides < Component
     down_to_up
     verify_shape
     # puts "shape: #{@shape}"
-    png = ChunkyPNG::Image.new($width, $height, ChunkyPNG::Color::WHITE)
-    @shape.each do |point|
-      x = point[0]
-      y = point[1]
-      png[x, y] = ChunkyPNG::Color.rgba(0, 0, 0, 128)
-    end
-    png.save('images/test.png', :interlace => true)
+    # png = ChunkyPNG::Image.new($width, $height, ChunkyPNG::Color::WHITE)
+    # @shape.each do |point|
+    #   x = point[0]
+    #   y = point[1]
+    #   png[x, y] = ChunkyPNG::Color.rgba(0, 0, 0, 128)
+    # end
+    # png.save('images/test.png', :interlace => true)
   end
 
   def left_to_right

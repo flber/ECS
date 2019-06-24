@@ -19,6 +19,7 @@ class Main < (Eaxample rescue Gosu::Window)
     super $width, $height
     self.caption = "ECS"
     @e_mng = EntityManager.new
+
     [-1, 1].each do |i|
       @e_mng.create_entity("Ball#{i}")
       @e_mng.add_component("Ball#{i}", Renderable.new("images/ball.png", 0, 1))
@@ -26,10 +27,24 @@ class Main < (Eaxample rescue Gosu::Window)
       @e_mng.add_component("Ball#{i}", AffectedByGravity.new)
       @e_mng.add_component("Ball#{i}", Collides.new(@e_mng.get_component_with_tag("Ball#{i}", Renderable).chunk_image))
     end
-    @e_mng.create_entity("Wall")
-    @e_mng.add_component("Wall", Renderable.new("images/wall.png", 0, 1))
-    @e_mng.add_component("Wall", Location.new(300, 250, 0, 0))
-    @e_mng.add_component("Wall", Collides.new(@e_mng.get_component_with_tag("Wall", Renderable).chunk_image))
+
+    @e_mng.create_entity("Ball")
+    @e_mng.add_component("Ball", Renderable.new("images/ball.png", 0, 1))
+    @e_mng.add_component("Ball", Location.new(540, 400, -10, -7))
+    @e_mng.add_component("Ball", AffectedByGravity.new)
+    @e_mng.add_component("Ball", Collides.new(@e_mng.get_component_with_tag("Ball", Renderable).chunk_image))
+
+    @e_mng.create_entity("Ball1")
+    @e_mng.add_component("Ball1", Renderable.new("images/ball.png", 0, 1))
+    @e_mng.add_component("Ball1", Location.new(320, 400, 0, -7))
+    @e_mng.add_component("Ball1", AffectedByGravity.new)
+    @e_mng.add_component("Ball1", Collides.new(@e_mng.get_component_with_tag("Ball1", Renderable).chunk_image))
+
+    # @e_mng.create_entity("Wall")
+    # @e_mng.add_component("Wall", Renderable.new("images/wall.png", 0, 1))
+    # @e_mng.add_component("Wall", Location.new(300, 250, 0, 0))
+    # @e_mng.add_component("Wall", Collides.new(@e_mng.get_component_with_tag("Wall", Renderable).chunk_image))
+
     @render = Render.new
     @acceleration = Acceleration.new
     @gravity = Gravity.new

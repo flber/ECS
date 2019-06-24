@@ -89,8 +89,19 @@ class Collisions < System
           x = point[0] - 25 + loc_comp.x
           y = point[1] - 50 + loc_comp.y
           if inWindow(x, y) && space[x][y].length > 1
-            loc_comp.dx *= -1
-            loc_comp.dy *= -1
+            o_id = 0
+            space[x][y].each do |id|
+              if id != e
+                o_id = id
+              end
+            end
+            o_id_loc = ent_mng.get_component(o_id, Location)
+            change_x = o_id_loc.dx/2
+            change_y = o_id_loc.dy/2
+            ent_mng.get_component(o_id, Location).dx -= change_x
+            ent_mng.get_component(o_id, Location).dy -= change_y
+            loc_comp.dx += change_x
+            loc_comp.dy += change_y
           end
         end
       end
