@@ -75,29 +75,31 @@ class Collides < Component
     # down_to_up
     circle_map
     verify_shape
-    png = ChunkyPNG::Image.new(@width+1, @height+1, ChunkyPNG::Color::WHITE)
-    @shape.each do |point|
-      x = point[0]
-      y = point[1]
-      png[x, y] = ChunkyPNG::Color.rgba(0, 0, 0, 128)
-    end
-    png.save("images/test#{id_thing}.png", :interlace => true)
+    # png = ChunkyPNG::Image.new(@width+10, @height+10, ChunkyPNG::Color::WHITE)
+    # @shape.each do |point|
+    #   x = point[0]
+    #   y = point[1]
+    #   png[x, y] = ChunkyPNG::Color.rgba(0, 0, 0, 128)
+    # end
+    # png.save("images/test#{id_thing}.png", :interlace => true)
   end
 
   def circle_map
     h = @width/2
     k = @height/2
-    r = @width + @height
-    (0..2*Math::PI).each do |theta|
-      x = h + (r*Math.cos(theta))
-      y = k - (r*Math.sin(theta))
-      relative_angle = theta - 90
+    r = @width/2
+    (0..Math::PI * 2).each do |theta|
+      x = h + r * Math.cos(theta)
+      y = k - r * Math.sin(theta)
+      temp_rad = theta + Math::PI/2
+      relative_angle = (temp_rad * 180)/Math::PI
       count = 0
       while count < 3
+        #puts "pixel: #{@cimg.get_pixel(x, y)}"
         if @cimg.get_pixel(x, y) != 0
           @shape << [x,y]
           count += 1
-          puts "hit!"
+          #puts "hit!"
         end
         x += Gosu.offset_x(relative_angle, 1)
         y += Gosu.offset_y(relative_angle, 1)

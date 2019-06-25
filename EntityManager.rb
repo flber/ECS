@@ -1,8 +1,8 @@
 class EntityManager
-  attr_reader :component_stores
+  attr_reader :entity_list
 
   def initialize
-    @component_stores = Hash.new
+    @entity_list = Hash.new
     # a list of ids indexed by tag
     @id_at_tag = Hash.new
     # a list of tags indexed by id
@@ -32,28 +32,28 @@ class EntityManager
     id = create_id
     @id_at_tag[tag] = id
     @tag_at_id[id] = tag
-    @component_stores.merge({id => Array.new})
+    @entity_list.merge({id => Array.new})
   end
 
   def remove_entity(tag)
     id = @id_at_tag[tag]
-    @component_stores.delete(id)
+    @entity_list.delete(id)
     @id_at_tag.delete(tag)
     @tag_at_id.delete(id)
   end
 
   def add_component(tag, component)
     id = @id_at_tag[tag]
-    if @component_stores[id].nil?
-      @component_stores[id] = Array.new(1){component}
+    if @entity_list[id].nil?
+      @entity_list[id] = Array.new(1){component}
     else
-      @component_stores[id] << component
+      @entity_list[id] << component
     end
   end
 
   def components_of(id)
     components = []
-    @component_stores[id].each do |comp|
+    @entity_list[id].each do |comp|
       components << comp.class
     end
     return components
@@ -64,7 +64,7 @@ class EntityManager
   end
 
   def get_component(id, component_class)
-    @component_stores[id].each do |comp|
+    @entity_list[id].each do |comp|
       if comp.to_s == component_class.to_s
         return comp
       end
@@ -74,7 +74,7 @@ class EntityManager
 
   def get_component_with_tag(tag, component_class)
     id = @id_at_tag[tag]
-    @component_stores[id].each do |comp|
+    @entity_list[id].each do |comp|
       if comp.to_s == component_class.to_s
         return comp
       end
@@ -84,8 +84,8 @@ class EntityManager
 
   def entities_with_component(component_class)
     entities = []
-    @component_stores.each do |e|
-      entity = @component_stores[e[0]]
+    @entity_list.each do |e|
+      entity = @entity_list[e[0]]
       entity.each do |c|
         if c.to_s == component_class.to_s
           entities << e[0]
@@ -95,10 +95,31 @@ class EntityManager
     return entities
   end
 
+  #temp_ent_list should be passed as @entity_list
+  def entities_with_components(component_classes)
+    temp_entities = @entity_list
+    temp_entities.each do |e|
+      component_classes.each do |c|
+        comps = []
+        e[1].each do |comp_ob|
+          comps << comp_ob.to_s
+        end
+        if !comps.include?(c.to_s)
+          temp_entities.delete(e)
+        end
+      end
+    end
+    id_list = []
+    temp_entities.each do |e|
+      id_list << e[0]
+    end
+    return id_list
+  end
+
   # not entirely sure if this works...
   # def add_entity(tag, entity)
   #   id = @id_at_tag[tag]
-  #   @component_stores[id] << {entity => @component_stores[entity]
+  #   @entity_list[id] << {entity => @entity_list[entity]
   # end
 
 end

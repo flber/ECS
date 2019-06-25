@@ -20,7 +20,8 @@ end
 class Render < System
 
   def process_tick(ent_mng)
-    ent_mng.entities_with_component(Renderable).each do |e|
+    component_list = [Renderable, Location]
+    ent_mng.entities_with_components(component_list).each do |e|
       if ent_mng.has_component_of_type(e, Location)
         render_comp = ent_mng.get_component(e, Renderable)
         loc_comp = ent_mng.get_component(e, Location)
@@ -56,7 +57,8 @@ class Gravity < System
   ACCELERATION = 0.6
 
   def process_tick(ent_mng)
-    ent_mng.entities_with_component(AffectedByGravity).each do |e|
+    component_list = [AffectedByGravity, Location]
+    ent_mng.entities_with_components(component_list).each do |e|
       loc_comp = ent_mng.get_component(e, Location)
       loc_comp.dy += ACCELERATION
     end
@@ -71,7 +73,8 @@ class Collisions < System
   def process_tick(ent_mng, space)
     space.clear
     space = Array.new($width){Array.new($height){Array.new(){}}}
-    ent_mng.entities_with_component(Collides).each do |e|
+    component_list = [Collides, Location, Renderable]
+    ent_mng.entities_with_components(component_list).each do |e|
       if ent_mng.has_component_of_type(e, Renderable)
         col_comp = ent_mng.get_component(e, Collides)
         @shape = col_comp.shape
