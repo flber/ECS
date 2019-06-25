@@ -25,25 +25,23 @@ class Main < (Eaxample rescue Gosu::Window)
       @e_mng.add_component("Ball#{i}", Renderable.new("images/ball.png", 0, 1))
       @e_mng.add_component("Ball#{i}", Location.new(320+(220*i), 200, 10*-i, -7))
       @e_mng.add_component("Ball#{i}", AffectedByGravity.new)
-      @e_mng.add_component("Ball#{i}", Collides.new(@e_mng.get_component_with_tag("Ball#{i}", Renderable).chunk_image))
+      chunk_image = @e_mng.get_component_with_tag("Ball#{i}", Renderable).chunk_image
+      @e_mng.add_component("Ball#{i}", Collides.new(chunk_image, "Ball#{i}"))
     end
 
-    @e_mng.create_entity("Ball")
-    @e_mng.add_component("Ball", Renderable.new("images/ball.png", 0, 1))
-    @e_mng.add_component("Ball", Location.new(540, 400, -10, -7))
-    @e_mng.add_component("Ball", AffectedByGravity.new)
-    @e_mng.add_component("Ball", Collides.new(@e_mng.get_component_with_tag("Ball", Renderable).chunk_image))
+    # @e_mng.create_entity("Ball")
+    # @e_mng.add_component("Ball", Renderable.new("images/ball.png", 0, 1))
+    # @e_mng.add_component("Ball", Location.new(540, 400, -10, -7))
+    # @e_mng.add_component("Ball", AffectedByGravity.new)
+    # chunk_image = @e_mng.get_component_with_tag("Ball", Renderable).chunk_image
+    # @e_mng.add_component("Ball", Collides.new(chunk_image, "Ball"))
 
-    @e_mng.create_entity("Ball1")
-    @e_mng.add_component("Ball1", Renderable.new("images/ball.png", 0, 1))
-    @e_mng.add_component("Ball1", Location.new(320, 400, 0, -7))
-    @e_mng.add_component("Ball1", AffectedByGravity.new)
-    @e_mng.add_component("Ball1", Collides.new(@e_mng.get_component_with_tag("Ball1", Renderable).chunk_image))
-
-    # @e_mng.create_entity("Wall")
-    # @e_mng.add_component("Wall", Renderable.new("images/wall.png", 0, 1))
-    # @e_mng.add_component("Wall", Location.new(300, 250, 0, 0))
-    # @e_mng.add_component("Wall", Collides.new(@e_mng.get_component_with_tag("Wall", Renderable).chunk_image))
+    # @e_mng.create_entity("Banana")
+    # @e_mng.add_component("Banana", Renderable.new("images/banana.png", 0, 1))
+    # @e_mng.add_component("Banana", Location.new(320, 300, 0, -15))
+    # @e_mng.add_component("Banana", AffectedByGravity.new)
+    # chunk_image = @e_mng.get_component_with_tag("Banana", Renderable).chunk_image
+    # @e_mng.add_component("Banana", Collides.new(chunk_image, "Banana"))
 
     @render = Render.new
     @acceleration = Acceleration.new
