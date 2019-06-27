@@ -88,6 +88,7 @@ class Collisions < System
             space[x][y] << e
           end
         end
+        puts "@shape: #{@shape}"
         @shape.each do |point|
           x = point[0] - 25 + loc_comp.x
           y = point[1] - 50 + loc_comp.y
