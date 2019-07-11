@@ -43,6 +43,15 @@ class Acceleration < System
   def process_tick(ent_mng)
     ent_mng.entities_with_component(Location).each do |e|
       loc_comp = ent_mng.get_component(e, Location)
+      id = ent_mng.id_at_tag["Space"]
+      if ent_mng.has_component_of_type(id, Resistance)
+        res_comp = ent_mng.get_component_with_tag("Space", Resistance)
+        loc_comp.dx *= res_comp.res
+        loc_comp.dy *= res_comp.res
+      end
+      puts "dx: #{loc_comp.dx}"
+      puts "dy: #{loc_comp.dy}"
+      puts ""
       loc_comp.x += loc_comp.dx
       loc_comp.y += loc_comp.dy
     end
@@ -54,13 +63,18 @@ end
 
 class Gravity < System
 
-  ACCELERATION = 0.6
-
   def process_tick(ent_mng)
-    component_list = [AffectedByGravity, Location]
-    ent_mng.entities_with_components(component_list).each do |e|
-      loc_comp = ent_mng.get_component(e, Location)
-      loc_comp.dy += ACCELERATION
+    id = ent_mng.id_at_tag["Space"]
+    if ent_mng.has_component_of_type(id, GravDir)
+      grav_comp = ent_mng.get_component_with_tag("Space", GravDir)
+      x_vel = grav_comp.x_vel
+      y_vel = grav_comp.y_vel
+      component_list = [AffectedByGravity, Location]
+      ent_mng.entities_with_components(component_list).each do |e|
+        loc_comp = ent_mng.get_component(e, Location)
+        loc_comp.dx += x_vel
+        loc_comp.dy += y_vel
+      end
     end
   end
 
@@ -88,7 +102,7 @@ class Collisions < System
             space[x][y] << e
           end
         end
-        puts "@shape: #{@shape}"
+        # puts "@shape: #{@shape}"
         @shape.each do |point|
           x = point[0] - 25 + loc_comp.x
           y = point[1] - 50 + loc_comp.y

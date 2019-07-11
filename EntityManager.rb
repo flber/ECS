@@ -1,5 +1,5 @@
 class EntityManager
-  attr_reader :entity_list
+  attr_reader :entity_list, :id_at_tag, :tag_at_id
 
   def initialize
     @entity_list = Hash.new
@@ -95,24 +95,21 @@ class EntityManager
     return entities
   end
 
-  #temp_ent_list should be passed as @entity_list
   def entities_with_components(component_classes)
-    temp_entities = @entity_list
-    temp_entities.each do |e|
-      component_classes.each do |c|
-        comps = []
-        e[1].each do |comp_ob|
-          comps << comp_ob.to_s
-        end
-        if !comps.include?(c.to_s)
-          temp_entities.delete(e)
+    id_list = []
+    @entity_list.each do |e|
+      id_list << e[0]
+    end
+    #puts "id list before: #{id_list}"
+    id_list.each do |id|
+      component_classes.each do |comp|
+        if !has_component_of_type(id, comp)
+          id_list.delete(id)
+          break
         end
       end
     end
-    id_list = []
-    temp_entities.each do |e|
-      id_list << e[0]
-    end
+    #puts "id list after: #{id_list}"
     return id_list
   end
 

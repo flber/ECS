@@ -20,6 +20,11 @@ class Main < (Eaxample rescue Gosu::Window)
     self.caption = "ECS"
     @e_mng = EntityManager.new
 
+    @e_mng.create_entity("Space")
+    @e_mng.add_component("Space", Space.new)
+    @e_mng.add_component("Space", GravDir.new(0, 0.6))
+    @e_mng.add_component("Space", Resistance.new(0.99))
+
     [-1, 1].each do |i|
       @e_mng.create_entity("Ball#{i}")
       @e_mng.add_component("Ball#{i}", Renderable.new("images/ball.png", 0, 1))
@@ -28,6 +33,12 @@ class Main < (Eaxample rescue Gosu::Window)
       chunk_image = @e_mng.get_component_with_tag("Ball#{i}", Renderable).chunk_image
       @e_mng.add_component("Ball#{i}", Collides.new(chunk_image, "Ball#{i}"))
     end
+
+    id_list = []
+    @e_mng.entity_list.each do |e|
+      id_list << e[0]
+    end
+    puts "ids: #{id_list}"
 
     # @e_mng.create_entity("Ball")
     # @e_mng.add_component("Ball", Renderable.new("images/ball.png", 0, 1))
