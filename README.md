@@ -5,4 +5,3 @@ A basic entity component system that may or may not be developed into a game. Fo
 # Dependencies:
 - Gosu
 - ChunkyPNG
-- Chipmunk
