@@ -62,6 +62,9 @@ class Main < (Eaxample rescue Gosu::Window)
   end
 
   def update
+    ban_loc = @e_mng.get_component_with_tag("Banana", Location)
+    ban_loc.x = mouse_x
+    ban_loc.y = mouse_y
     # id = @e_mng.id_at_tag["Space"]
     # @e_mng.get_component(id, GravDir).x_vel = (mouse_x - $width/2)/1000
     # @e_mng.get_component(id, GravDir).y_vel = (mouse_y - $height/2)/1000

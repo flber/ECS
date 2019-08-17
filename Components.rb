@@ -71,7 +71,7 @@ end
 #=================================================
 
 class Collides < Component
-  attr_reader :shape
+  attr_reader :shape, :shape_interior
 
   def initialize(chunk_image, id_thing)
     @cimg = chunk_image
