@@ -51,6 +51,17 @@ class EntityManager
     end
   end
 
+  def add_components(tag, components)
+    id = @id_at_tag[tag]
+    components.each do |component|
+      if @entity_list[id].nil?
+        @entity_list[id] = Array.new(1){component}
+      else
+        @entity_list[id] << component
+      end
+    end
+  end
+
   def components_of(id)
     components = []
     @entity_list[id].each do |comp|
@@ -100,16 +111,17 @@ class EntityManager
     @entity_list.each do |e|
       id_list << e[0]
     end
-    #puts "id list before: #{id_list}"
-    id_list.each do |id|
+    count = 0
+    while count < id_list.length
+      id = id_list[count]
       component_classes.each do |comp|
         if !has_component_of_type(id, comp)
           id_list.delete(id)
           break
         end
+        count += 1
       end
     end
-    #puts "id list after: #{id_list}"
     return id_list
   end
 

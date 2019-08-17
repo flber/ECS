@@ -22,7 +22,7 @@ class Render < System
   def process_tick(ent_mng)
     component_list = [Renderable, Location]
     ent_mng.entities_with_components(component_list).each do |e|
-      if ent_mng.has_component_of_type(e, Location)
+      if ent_mng.has_component_of_type(e, Location) && !ent_mng.has_component_of_type(e, Space)
         render_comp = ent_mng.get_component(e, Renderable)
         loc_comp = ent_mng.get_component(e, Location)
         x = loc_comp.x
@@ -43,17 +43,20 @@ class Acceleration < System
   def process_tick(ent_mng)
     ent_mng.entities_with_component(Location).each do |e|
       loc_comp = ent_mng.get_component(e, Location)
-      id = ent_mng.id_at_tag["Space"]
-      if ent_mng.has_component_of_type(id, Resistance)
-        res_comp = ent_mng.get_component_with_tag("Space", Resistance)
-        loc_comp.dx *= res_comp.res
-        loc_comp.dy *= res_comp.res
+      # this really should be in the collision system...
+      #
+      # components = [Space, Resistance]
+      # ent_mng.entities_with_components(components).each do |s|
+      #   puts "space: #{s}"
+      #   res_comp = ent_mng.get_component(s, Resistance)
+      #   puts "resistance: #{res_comp}"
+      #   loc_comp.dx *= res_comp.res
+      #   loc_comp.dy *= res_comp.res
+      # end
+      if !ent_mng.has_component_of_type(e, Stationary)
+        loc_comp.x += loc_comp.dx
+        loc_comp.y += loc_comp.dy
       end
-      puts "dx: #{loc_comp.dx}"
-      puts "dy: #{loc_comp.dy}"
-      puts ""
-      loc_comp.x += loc_comp.dx
-      loc_comp.y += loc_comp.dy
     end
   end
 
@@ -64,9 +67,8 @@ end
 class Gravity < System
 
   def process_tick(ent_mng)
-    id = ent_mng.id_at_tag["Space"]
-    if ent_mng.has_component_of_type(id, GravDir)
-      grav_comp = ent_mng.get_component_with_tag("Space", GravDir)
+    ent_mng.entities_with_component(Space).each do |s|
+      grav_comp = ent_mng.get_component(s, GravDir)
       x_vel = grav_comp.x_vel
       y_vel = grav_comp.y_vel
       component_list = [AffectedByGravity, Location]
@@ -89,42 +91,99 @@ class Collisions < System
     space = Array.new($width){Array.new($height){Array.new(){}}}
     component_list = [Collides, Location, Renderable]
     ent_mng.entities_with_components(component_list).each do |e|
-      if ent_mng.has_component_of_type(e, Renderable)
-        col_comp = ent_mng.get_component(e, Collides)
-        @shape = col_comp.shape
-        render_comp = ent_mng.get_component(e, Renderable)
-        loc_comp = ent_mng.get_component(e, Location)
-        #add current points
-        @shape.each do |point|
-          x = point[0] - 25 + loc_comp.x
-          y = point[1] - 50 + loc_comp.y
-          if inWindow(x, y)
-            space[x][y] << e
-          end
+      hit_stop = false
+      col_comp = ent_mng.get_component(e, Collides)
+      @shape = col_comp.shape
+      render_comp = ent_mng.get_component(e, Renderable)
+      loc_comp = ent_mng.get_component(e, Location)
+      #add current points
+      @shape.each do |point|
+        x = point[0] - 25 + loc_comp.x
+        y = point[1] - 50 + loc_comp.y
+        if inWindow(x, y)
+          space[x][y] << e
         end
-        # puts "@shape: #{@shape}"
-        @shape.each do |point|
-          x = point[0] - 25 + loc_comp.x
-          y = point[1] - 50 + loc_comp.y
-          if inWindow(x, y) && space[x][y].length > 1
-            o_id = 0
-            space[x][y].each do |id|
-              if id != e
-                o_id = id
+      end
+      # puts "@shape: #{@shape}"
+      @shape.each do |point|
+        x = point[0] - 25 + loc_comp.x
+        y = point[1] - 50 + loc_comp.y
+        if inWindow(x, y) && space[x][y].length > 1
+          o_id = 0
+          space[x][y].each do |id|
+            if id != e && !hit_stop # if you've hit a different shape and you haven't hit one before
+              o_id = id # save the id of the other shape
+              puts "---------------------"
+              puts "#{ent_mng.tag_at_id[e]} hit #{ent_mng.tag_at_id[o_id]}"
+              if ent_mng.has_component_of_type(o_id, Stationary)
+                loc_comp.dx *= -1.0
+                loc_comp.dy *= -1.0
               end
+              if ent_mng.has_component_of_type(e, Stationary)
+                o_id_loc = ent_mng.get_component(o_id, Location) # get the other shape's Loc
+                o_id_loc.dx *= -1.0
+                o_id_loc.dy *= -1.0
+              else
+                o_id_loc = ent_mng.get_component(o_id, Location) # get the other shape's Loc
+                this_change_x = loc_comp.dx/2.0
+                this_change_y = loc_comp.dy/2.0
+                other_change_x = o_id_loc.dx/2.0
+                other_change_y = o_id_loc.dy/2.0
+                puts "old dx of #{ent_mng.tag_at_id[e]}: #{loc_comp.dx}"
+                o_id_old_dx = o_id_loc.dx # this is just to get an output that's accurate
+                o_id_loc.dx -= other_change_x
+                o_id_loc.dy -= other_change_y
+                loc_comp.dx -= this_change_x
+                loc_comp.dy -= this_change_y
+                puts "subract #{this_change_x} and add #{other_change_x}"
+                o_id_loc.dx += this_change_x
+                o_id_loc.dy += this_change_y
+                loc_comp.dx += other_change_x
+                loc_comp.dy += other_change_y
+                puts "new dx of #{ent_mng.tag_at_id[e]}: #{o_id_loc.dx}"
+                puts ""
+                puts "old dx of #{ent_mng.tag_at_id[o_id]}: #{o_id_old_dx}"
+                puts "subract #{other_change_x} and add #{this_change_x}"
+                puts "new dx of #{ent_mng.tag_at_id[o_id]}: #{o_id_loc.dx}"
+                puts "---------------------"
+                puts ""
+              end
+            else
+              hit_stop = true
+              # puts "NO HIT! -------------------------------"
             end
-            o_id_loc = ent_mng.get_component(o_id, Location)
-            change_x = o_id_loc.dx/2
-            change_y = o_id_loc.dy/2
-            ent_mng.get_component(o_id, Location).dx -= change_x
-            ent_mng.get_component(o_id, Location).dy -= change_y
-            loc_comp.dx += change_x
-            loc_comp.dy += change_y
           end
         end
       end
     end
     return space
+  end
+
+end
+
+#=================================================
+
+class Move < System
+
+  def process_tick(ent_mng)
+    components = [Player, Location]
+    ent_mng.entities_with_components(components).each do |e|
+      player_comp = ent_mng.get_component(e, Player)
+      loc_comp = ent_mng.get_component(e, Location)
+      puts "player comp up: #{player_comp.up}"
+      if button_down?(player_comp.up)
+        loc_comp.dy -= 2
+      end
+      if button_down?(player_comp.left)
+        loc_comp.dx -= 2
+      end
+      if button_down?(player_comp.down)
+        loc_comp.dy += 2
+      end
+      if button_down?(player_comp.right)
+        loc_comp.dx += 2
+      end
+    end
   end
 
 end

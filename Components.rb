@@ -56,7 +56,16 @@ end
 
 #=================================================
 
-class Movement < Component
+class Player < Component
+  attr_reader :up, :left, :down, :right
+
+  def initialize(up_b, left_b, down_b, right_b)
+    @up = up_b
+    @left = left_b
+    @down = down_b
+    @right = right_b
+  end
+
 end
 
 #=================================================
@@ -69,19 +78,21 @@ class Collides < Component
     @width = chunk_image.width
     @height = chunk_image.height
     @shape = Array.new(){}
+    @shape_interior = Array.new(){}
     left_to_right
     right_to_left
     up_to_down
     down_to_up
     # circle_map
     verify_shape
-    # png = ChunkyPNG::Image.new(@width+10, @height+10, ChunkyPNG::Color::WHITE)
-    # @shape.each do |point|
-    #   x = point[0]
-    #   y = point[1]
-    #   png[x, y] = ChunkyPNG::Color.rgba(0, 0, 0, 128)
-    # end
-    # png.save("images/test#{id_thing}.png", :interlace => true)
+
+    png = ChunkyPNG::Image.new(@width+10, @height+10, ChunkyPNG::Color::WHITE)
+    @shape.each do |point|
+      x = point[0]
+      y = point[1]
+      png[x, y] = ChunkyPNG::Color.rgba(0, 0, 0, 128)
+    end
+    png.save("images/test#{id_thing}.png", :interlace => true)
   end
 
   def circle_map
@@ -183,12 +194,23 @@ class Collides < Component
     # puts "removed duplicates!"
   end
 
+  def fill_shape
+    (0..@height-1).each do |x|
+      (0..@width-1).each do |y|
+        if @cimg.get_pixel(x, y) != 0
+          @shape_interior << [x,y]
+        end
+      end
+    end
+  end
+
 end
 
 #=================================================
 
 class Space < Component
 end
+
 #=================================================
 
 class Resistance < Component
@@ -199,6 +221,7 @@ class Resistance < Component
   end
 
 end
+
 #=================================================
 
 class GravDir < Component
@@ -209,4 +232,9 @@ class GravDir < Component
     @y_vel = y_vel
   end
 
+end
+
+#=================================================
+
+class Stationary < Component
 end
