@@ -21,17 +21,18 @@ class Main < (Eaxample rescue Gosu::Window)
     self.caption = "ECS"
     @e_mng = EntityManager.new
 
-    @e_mng.create_entity("Space")
-    @e_mng.add_component("Space", Space.new)
-    @e_mng.add_component("Space", GravDir.new(0, 0.6))
-    @e_mng.add_component("Space", Resistance.new(0.99))
-    # @e_mng.add_component("Space", Location.new(320, 240, 0, 0))
-    # @e_mng.add_component("Space", Renderable.new("images/space_test.png", 0, 0))
-    # chunk_image = @e_mng.get_component_with_tag("Space", Renderable).chunk_image
-    # @e_mng.add_component("Space", Collides.new(chunk_image, "Space"))
-
     @ball_chunk_image = ChunkyPNG::Image.from_file("images/ball.png")
     @banana_chunk_image = ChunkyPNG::Image.from_file("images/banana.png")
+    @space_chunk_image = ChunkyPNG::Image.from_file("images/space.png")
+
+    @e_mng.create_entity("Space")
+    components = [Space.new,
+                  GravDir.new(0, 0.6),
+                  Renderable.new("images/space.png", 0, 5),
+                  Location.new(320, 240, 8.0, 0),
+                  Resistance.new(0.9),
+                  Collides.new(@space_chunk_image, "Space")]
+    @e_mng.add_components("Ball_1", components)
 
     @e_mng.create_entity("Ball_1")
     components = [Renderable.new("images/ball.png", 0, 1),
@@ -62,9 +63,9 @@ class Main < (Eaxample rescue Gosu::Window)
   end
 
   def update
-    ban_loc = @e_mng.get_component_with_tag("Banana", Location)
-    ban_loc.x = mouse_x
-    ban_loc.y = mouse_y
+    # ban_loc = @e_mng.get_component_with_tag("Banana", Location)
+    # ban_loc.x = mouse_x
+    # ban_loc.y = mouse_y
     # id = @e_mng.id_at_tag["Space"]
     # @e_mng.get_component(id, GravDir).x_vel = (mouse_x - $width/2)/1000
     # @e_mng.get_component(id, GravDir).y_vel = (mouse_y - $height/2)/1000

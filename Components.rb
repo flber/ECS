@@ -86,13 +86,13 @@ class Collides < Component
     # circle_map
     verify_shape
 
-    png = ChunkyPNG::Image.new(@width+10, @height+10, ChunkyPNG::Color::WHITE)
-    @shape.each do |point|
-      x = point[0]
-      y = point[1]
-      png[x, y] = ChunkyPNG::Color.rgba(0, 0, 0, 128)
-    end
-    png.save("images/test#{id_thing}.png", :interlace => true)
+    # png = ChunkyPNG::Image.new(@width+10, @height+10, ChunkyPNG::Color::WHITE)
+    # @shape.each do |point|
+    #   x = point[0]
+    #   y = point[1]
+    #   png[x, y] = ChunkyPNG::Color.rgba(0, 0, 0, 128)
+    # end
+    # png.save("images/test#{id_thing}.png", :interlace => true)
   end
 
   def circle_map
