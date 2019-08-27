@@ -127,10 +127,8 @@ class Collisions < System
             space[x][y].each do |id|
               if id != e && !hit_stop # if you've hit a different shape and you haven't hit one before
                 o_id = id # save the id of the other shape
-                puts "o_id: #{o_id}"
                 if o_id.to_s[0..0] == "i" # if the id has an "i" as the first letter
-                  puts "hit space!"
-                  space_id = o_id[1..o_id.length] # find the actual id (sans "i")
+                  space_id = o_id[1..o_id.length].to_i # find the actual id (sans "i")
                   space_res = ent_mng.get_component(space_id, Resistance)
                   space_grav = ent_mng.get_component(space_id, GravDir)
                   x_vel = space_grav.x_vel
@@ -141,8 +139,6 @@ class Collisions < System
                   loc_comp.dx += x_vel
                   loc_comp.dy += y_vel
                 else
-                  puts "---------------------"
-                  puts "#{ent_mng.tag_at_id[e]} hit #{ent_mng.tag_at_id[o_id]}"
                   if ent_mng.has_component_of_type(o_id, Stationary)
                     loc_comp.dx *= -1.0
                     loc_comp.dy *= -1.0
@@ -157,24 +153,17 @@ class Collisions < System
                     this_change_y = loc_comp.dy/2.0
                     other_change_x = o_id_loc.dx/2.0
                     other_change_y = o_id_loc.dy/2.0
-                    puts "old dx of #{ent_mng.tag_at_id[e]}: #{loc_comp.dx}"
+
                     o_id_old_dx = o_id_loc.dx # this is just to get an output that's accurate
                     o_id_loc.dx -= other_change_x
                     o_id_loc.dy -= other_change_y
                     loc_comp.dx -= this_change_x
                     loc_comp.dy -= this_change_y
-                    puts "subract #{this_change_x} and add #{other_change_x}"
+
                     o_id_loc.dx += this_change_x
                     o_id_loc.dy += this_change_y
                     loc_comp.dx += other_change_x
                     loc_comp.dy += other_change_y
-                    puts "new dx of #{ent_mng.tag_at_id[e]}: #{o_id_loc.dx}"
-                    puts ""
-                    puts "old dx of #{ent_mng.tag_at_id[o_id]}: #{o_id_old_dx}"
-                    puts "subract #{other_change_x} and add #{this_change_x}"
-                    puts "new dx of #{ent_mng.tag_at_id[o_id]}: #{o_id_loc.dx}"
-                    puts "---------------------"
-                    puts ""
                   end
                 end
               else

@@ -32,7 +32,7 @@ class Main < (Eaxample rescue Gosu::Window)
                   Location.new(320, 240, 0, 0),
                   Resistance.new(0.9),
                   Collides.new(@space_chunk_image, "Space")]
-    @e_mng.add_components("Ball_1", components)
+    @e_mng.add_components("Space", components)
 
     @e_mng.create_entity("Ball_1")
     components = [Renderable.new("images/ball.png", 0, 1),
