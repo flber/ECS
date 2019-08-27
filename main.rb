@@ -28,8 +28,8 @@ class Main < (Eaxample rescue Gosu::Window)
     @e_mng.create_entity("Space")
     components = [Space.new,
                   GravDir.new(0, 0.6),
-                  Renderable.new("images/space.png", 0, 5),
-                  Location.new(320, 240, 8.0, 0),
+                  Renderable.new("images/space.png", 0, 1),
+                  Location.new(320, 240, 0, 0),
                   Resistance.new(0.9),
                   Collides.new(@space_chunk_image, "Space")]
     @e_mng.add_components("Ball_1", components)
@@ -60,6 +60,14 @@ class Main < (Eaxample rescue Gosu::Window)
     @gravity = Gravity.new
     @collisions = Collisions.new
     # @move = Move.new
+
+    # ent_list = @e_mng.entity_list
+    # id_list = []
+    # ent_list.each do |ent|
+    #   id_list << ent[0]
+    # end
+    # puts "#{id_list}"
+
   end
 
   def update

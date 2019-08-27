@@ -32,11 +32,18 @@ class EntityManager
     id = create_id
     @id_at_tag[tag] = id
     @tag_at_id[id] = tag
-    @entity_list.merge({id => Array.new})
+    @entity_list[id] = Array.new
+    @entity_list.delete(nil)
   end
 
-  def remove_entity(tag)
+  def remove_entity_from_tag(tag)
     id = @id_at_tag[tag]
+    @entity_list.delete(id)
+    @id_at_tag.delete(tag)
+    @tag_at_id.delete(id)
+  end
+
+  def remove_entity(id)
     @entity_list.delete(id)
     @id_at_tag.delete(tag)
     @tag_at_id.delete(id)
