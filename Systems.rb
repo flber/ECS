@@ -5,9 +5,16 @@ module Checks
   end
 end
 
+module Print
+  def debug(s, &b)
+    puts "#{s} = #{eval(s.to_s, b.binding)}"
+  end
+end
+
 class System
 
   include Checks
+  include Print
 
   def process_tick
     raise RuntimeError, "You're doing something wrong!"
@@ -133,9 +140,11 @@ class Collisions < System
                   space_grav = ent_mng.get_component(space_id, GravDir)
                   x_vel = space_grav.x_vel
                   y_vel = space_grav.y_vel
+                  puts space_grav.y_vel
                   res = space_res.res
-                  loc_comp.dx -= res
-                  loc_comp.dy -= res
+                  loc_comp.dx *= res
+                  loc_comp.dy *= res
+                  puts "adding #{y_vel} to #{loc_comp.dy}"
                   loc_comp.dx += x_vel
                   loc_comp.dy += y_vel
                 else
