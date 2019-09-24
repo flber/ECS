@@ -5,16 +5,9 @@ module Checks
   end
 end
 
-module Print
-  def debug(s, &b)
-    puts "#{s} = #{eval(s.to_s, b.binding)}"
-  end
-end
-
 class System
 
   include Checks
-  include Print
 
   def process_tick
     raise RuntimeError, "You're doing something wrong!"
@@ -102,10 +95,11 @@ class Collisions < System
       if ent_mng.has_component_of_type(e, Space)
         col_comp = ent_mng.get_component(e, Collides)
         loc_comp = ent_mng.get_component(e, Location)
+        render_comp = ent_mng.get_component(e, Renderable)
         int_shape = col_comp.shape_interior
         int_shape.each do |point|
-          x = point[0] - 25 + loc_comp.x
-          y = point[1] - 50 + loc_comp.y
+          x = point[1] - 45 - (render_comp.height/2) + loc_comp.x
+          y = point[0] + 45 - (render_comp.width/2) + loc_comp.y
           if inWindow(x, y)
             #puts "#{e}"
             space[x][y] << "i#{e}"
@@ -119,8 +113,8 @@ class Collisions < System
         loc_comp = ent_mng.get_component(e, Location)
         #add current points
         @shape.each do |point|
-          x = point[0] - 25 + loc_comp.x
-          y = point[1] - 50 + loc_comp.y
+          x = point[0] - (col_comp.max_side/2) + loc_comp.x
+          y = point[1] - (col_comp.max_side/2) + loc_comp.y
           if inWindow(x, y)
             space[x][y] << e
           end
@@ -138,13 +132,12 @@ class Collisions < System
                   space_id = o_id[1..o_id.length].to_i # find the actual id (sans "i")
                   space_res = ent_mng.get_component(space_id, Resistance)
                   space_grav = ent_mng.get_component(space_id, GravDir)
+                  col_comp.hit_list << [x, y]
                   x_vel = space_grav.x_vel
                   y_vel = space_grav.y_vel
-                  puts space_grav.y_vel
                   res = space_res.res
                   loc_comp.dx *= res
                   loc_comp.dy *= res
-                  puts "adding #{y_vel} to #{loc_comp.dy}"
                   loc_comp.dx += x_vel
                   loc_comp.dy += y_vel
                 else
