@@ -71,53 +71,75 @@ end
 #=================================================
 
 class Collides < Component
-  attr_reader :shape, :shape_interior
+  attr_reader :shape, :shape_interior, :hit_list, :max_side
 
   def initialize(chunk_image, id_thing)
     @cimg = chunk_image
+    @id_thing = id_thing
     @width = chunk_image.width
     @height = chunk_image.height
+    @max_side = [@width*2, @height*2].max
     @shape = Array.new(){}
     @shape_interior = Array.new(){}
-    left_to_right
-    right_to_left
-    up_to_down
-    down_to_up
-    # circle_map
+    @hit_list = Array.new(){}
+    # left_to_right
+    # right_to_left
+    # up_to_down
+    # down_to_up
+    make_large_chunky
+    circle_map
     verify_shape
-
-    png = ChunkyPNG::Image.new(@width+10, @height+10, ChunkyPNG::Color::WHITE)
+    fill_shape
+    @large_chunky.save("images/large_#{id_thing}.png", :interlace => true)
+    shape_chunky = ChunkyPNG::Image.new(@max_side, @max_side, ChunkyPNG::Color::TRANSPARENT)
     @shape.each do |point|
       x = point[0]
       y = point[1]
-      png[x, y] = ChunkyPNG::Color.rgba(0, 0, 0, 128)
+      shape_chunky[x, y] = ChunkyPNG::Color.rgba(0, 0, 0, 128)
+      # puts "(#{x}, #{y})"
     end
-    png.save("images/test#{id_thing}.png", :interlace => true)
+    shape_chunky.save("images/shape_#{id_thing}.png", :interlace => true)
+    @shape.clear
+    (0..@max_side).each do |x|
+      (0..@max_side).each do |y|
+        if @large_chunky.get_pixel(x, y) == 255
+          shape << [x, y]
+        end
+      end
+    end
+  end
+
+  def make_large_chunky
+    @large_chunky = ChunkyPNG::Image.new(@max_side, @max_side, ChunkyPNG::Color::TRANSPARENT)
+    (0..@max_side).each do |x|
+      (0..@max_side).each do |y|
+        if (x > (@max_side/2 - @width/2) &&
+            x < (@max_side - @width/2) &&
+            y > (@max_side/2 - @height/2) &&
+            y < (@max_side - @height/2) &&
+            @cimg.get_pixel(x - (@max_side/2 - @width/2), y - (@max_side/2 - @height/2)) != nil)
+            @large_chunky[x, y] = @cimg.get_pixel(x - (@max_side/2 - @width/2), y - (@max_side/2 - @height/2))
+        end
+      end
+    end
   end
 
   def circle_map
-    h = @width/2
-    k = @height/2
-    r = @width/2 + 1
     theta = 0
-    while theta < Math::PI * 2
-      x = Math.cos(theta)
-      y = Math.sin(theta)
-      puts "x, y: #{x}, #{y}"
-      temp_rad = theta + Math::PI/2
-      relative_angle = (temp_rad * 180)/Math::PI
-      count = 0
-      while count < 3
-        # puts "pixel: #{@cimg.get_pixel(x, y)}"
-        if @cimg.get_pixel(x, y) != 0
-          @shape << [x,y]
-          count += 1
-          # puts "hit!"
+    phi = (1 + Math.sqrt(5))/2
+    cycle = Math::PI*2
+    while theta < (cycle*1000)
+      r = @max_side/2
+      while r > 0
+        x = Math.cos(theta)*r + @max_side/2
+        y = Math.sin(theta)*r + @max_side/2
+        if @large_chunky.get_pixel(x, y) == 255
+          @shape << [x, y]
+          break
         end
-        x += Gosu.offset_x(relative_angle, 1)
-        y += Gosu.offset_y(relative_angle, 1)
+        r -= 1
       end
-      #theta +=
+      theta += phi
     end
   end
 
